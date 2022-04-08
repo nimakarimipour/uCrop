@@ -1,5 +1,6 @@
 package com.yalantis.ucrop.view.widget;
 
+import androidx.annotation.Nullable;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,9 +10,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.yalantis.ucrop.R;
-
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
@@ -22,15 +21,21 @@ public class HorizontalProgressWheelView extends View {
 
     private final Rect mCanvasClipBounds = new Rect();
 
+    @Nullable
     private ScrollingListener mScrollingListener;
+
     private float mLastTouchedPosition;
 
     private Paint mProgressLinePaint;
+
     private Paint mProgressMiddleLinePaint;
+
     private int mProgressLineWidth, mProgressLineHeight;
+
     private int mProgressLineMargin;
 
     private boolean mScrollStarted;
+
     private float mTotalScrollDistance;
 
     private int mMiddleLineColor;
@@ -39,11 +44,11 @@ public class HorizontalProgressWheelView extends View {
         this(context, null);
     }
 
-    public HorizontalProgressWheelView(Context context, AttributeSet attrs) {
+    public HorizontalProgressWheelView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HorizontalProgressWheelView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HorizontalProgressWheelView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -65,7 +70,7 @@ public class HorizontalProgressWheelView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
+        switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastTouchedPosition = event.getX();
                 break;
@@ -95,10 +100,8 @@ public class HorizontalProgressWheelView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.getClipBounds(mCanvasClipBounds);
-
         int linesCount = mCanvasClipBounds.width() / (mProgressLineWidth + mProgressLineMargin);
         float deltaX = (mTotalScrollDistance) % (float) (mProgressLineMargin + mProgressLineWidth);
-
         for (int i = 0; i < linesCount; i++) {
             if (i < (linesCount / 4)) {
                 mProgressLinePaint.setAlpha((int) (255 * (i / (float) (linesCount / 4))));
@@ -107,15 +110,9 @@ public class HorizontalProgressWheelView extends View {
             } else {
                 mProgressLinePaint.setAlpha(255);
             }
-            canvas.drawLine(
-                    -deltaX + mCanvasClipBounds.left + i * (mProgressLineWidth + mProgressLineMargin),
-                    mCanvasClipBounds.centerY() - mProgressLineHeight / 4.0f,
-                    -deltaX + mCanvasClipBounds.left + i * (mProgressLineWidth + mProgressLineMargin),
-                    mCanvasClipBounds.centerY() + mProgressLineHeight / 4.0f, mProgressLinePaint);
+            canvas.drawLine(-deltaX + mCanvasClipBounds.left + i * (mProgressLineWidth + mProgressLineMargin), mCanvasClipBounds.centerY() - mProgressLineHeight / 4.0f, -deltaX + mCanvasClipBounds.left + i * (mProgressLineWidth + mProgressLineMargin), mCanvasClipBounds.centerY() + mProgressLineHeight / 4.0f, mProgressLinePaint);
         }
-
         canvas.drawLine(mCanvasClipBounds.centerX(), mCanvasClipBounds.centerY() - mProgressLineHeight / 2.0f, mCanvasClipBounds.centerX(), mCanvasClipBounds.centerY() + mProgressLineHeight / 2.0f, mProgressMiddleLinePaint);
-
     }
 
     private void onScrollEvent(MotionEvent event, float distance) {
@@ -129,16 +126,13 @@ public class HorizontalProgressWheelView extends View {
 
     private void init() {
         mMiddleLineColor = ContextCompat.getColor(getContext(), R.color.ucrop_color_widget_rotate_mid_line);
-
         mProgressLineWidth = getContext().getResources().getDimensionPixelSize(R.dimen.ucrop_width_horizontal_wheel_progress_line);
         mProgressLineHeight = getContext().getResources().getDimensionPixelSize(R.dimen.ucrop_height_horizontal_wheel_progress_line);
         mProgressLineMargin = getContext().getResources().getDimensionPixelSize(R.dimen.ucrop_margin_horizontal_wheel_progress_line);
-
         mProgressLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mProgressLinePaint.setStyle(Paint.Style.STROKE);
         mProgressLinePaint.setStrokeWidth(mProgressLineWidth);
         mProgressLinePaint.setColor(getResources().getColor(R.color.ucrop_color_progress_wheel_line));
-
         mProgressMiddleLinePaint = new Paint(mProgressLinePaint);
         mProgressMiddleLinePaint.setColor(mMiddleLineColor);
         mProgressMiddleLinePaint.setStrokeCap(Paint.Cap.ROUND);
@@ -153,5 +147,4 @@ public class HorizontalProgressWheelView extends View {
 
         void onScrollEnd();
     }
-
 }
