@@ -8,13 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
-
 import com.yalantis.ucrop.callback.BitmapLoadCallback;
 import com.yalantis.ucrop.model.ExifInfo;
 import com.yalantis.ucrop.util.BitmapLoadUtils;
 import com.yalantis.ucrop.util.FastBitmapDrawable;
 import com.yalantis.ucrop.util.RectUtils;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,28 +29,39 @@ public class TransformImageView extends AppCompatImageView {
     private static final String TAG = "TransformImageView";
 
     private static final int RECT_CORNER_POINTS_COORDS = 8;
+
     private static final int RECT_CENTER_POINT_COORDS = 2;
+
     private static final int MATRIX_VALUES_COUNT = 9;
 
     protected final float[] mCurrentImageCorners = new float[RECT_CORNER_POINTS_COORDS];
+
     protected final float[] mCurrentImageCenter = new float[RECT_CENTER_POINT_COORDS];
 
     private final float[] mMatrixValues = new float[MATRIX_VALUES_COUNT];
 
     protected Matrix mCurrentImageMatrix = new Matrix();
+
     protected int mThisWidth, mThisHeight;
 
+    @Nullable
     protected TransformImageListener mTransformImageListener;
 
+    @Nullable
     private float[] mInitialImageCorners;
+
+    @Nullable
     private float[] mInitialImageCenter;
 
     protected boolean mBitmapDecoded = false;
+
     protected boolean mBitmapLaidOut = false;
 
     private int mMaxBitmapSize = 0;
 
+    @Nullable
     private String mImageInputPath, mImageOutputPath;
+
     private ExifInfo mExifInfo;
 
     /**
@@ -67,14 +76,13 @@ public class TransformImageView extends AppCompatImageView {
         void onRotate(float currentAngle);
 
         void onScale(float currentScale);
-
     }
 
     public TransformImageView(Context context) {
         this(context, null);
     }
 
-    public TransformImageView(Context context, AttributeSet attrs) {
+    public TransformImageView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
@@ -138,28 +146,25 @@ public class TransformImageView extends AppCompatImageView {
      */
     public void setImageUri(@NonNull Uri imageUri, @Nullable Uri outputUri) throws Exception {
         int maxBitmapSize = getMaxBitmapSize();
+        BitmapLoadUtils.decodeBitmapInBackground(getContext(), imageUri, outputUri, maxBitmapSize, maxBitmapSize, new BitmapLoadCallback() {
 
-        BitmapLoadUtils.decodeBitmapInBackground(getContext(), imageUri, outputUri, maxBitmapSize, maxBitmapSize,
-                new BitmapLoadCallback() {
+            @Override
+            public void onBitmapLoaded(@NonNull Bitmap bitmap, @NonNull ExifInfo exifInfo, @NonNull String imageInputPath, @Nullable String imageOutputPath) {
+                mImageInputPath = imageInputPath;
+                mImageOutputPath = imageOutputPath;
+                mExifInfo = exifInfo;
+                mBitmapDecoded = true;
+                setImageBitmap(bitmap);
+            }
 
-                    @Override
-                    public void onBitmapLoaded(@NonNull Bitmap bitmap, @NonNull ExifInfo exifInfo, @NonNull String imageInputPath, @Nullable String imageOutputPath) {
-                        mImageInputPath = imageInputPath;
-                        mImageOutputPath = imageOutputPath;
-                        mExifInfo = exifInfo;
-
-                        mBitmapDecoded = true;
-                        setImageBitmap(bitmap);
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Exception bitmapWorkerException) {
-                        Log.e(TAG, "onFailure: setImageUri", bitmapWorkerException);
-                        if (mTransformImageListener != null) {
-                            mTransformImageListener.onLoadFailure(bitmapWorkerException);
-                        }
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Exception bitmapWorkerException) {
+                Log.e(TAG, "onFailure: setImageUri", bitmapWorkerException);
+                if (mTransformImageListener != null) {
+                    mTransformImageListener.onLoadFailure(bitmapWorkerException);
+                }
+            }
+        });
     }
 
     /**
@@ -174,8 +179,7 @@ public class TransformImageView extends AppCompatImageView {
      * This method calculates scale value for given Matrix object.
      */
     public float getMatrixScale(@NonNull Matrix matrix) {
-        return (float) Math.sqrt(Math.pow(getMatrixValue(matrix, Matrix.MSCALE_X), 2)
-                + Math.pow(getMatrixValue(matrix, Matrix.MSKEW_Y), 2));
+        return (float) Math.sqrt(Math.pow(getMatrixValue(matrix, Matrix.MSCALE_X), 2) + Math.pow(getMatrixValue(matrix, Matrix.MSKEW_Y), 2));
     }
 
     /**
@@ -189,8 +193,7 @@ public class TransformImageView extends AppCompatImageView {
      * This method calculates rotation angle for given Matrix object.
      */
     public float getMatrixAngle(@NonNull Matrix matrix) {
-        return (float) -(Math.atan2(getMatrixValue(matrix, Matrix.MSKEW_X),
-                getMatrixValue(matrix, Matrix.MSCALE_X)) * (180 / Math.PI));
+        return (float) -(Math.atan2(getMatrixValue(matrix, Matrix.MSKEW_X), getMatrixValue(matrix, Matrix.MSCALE_X)) * (180 / Math.PI));
     }
 
     @Override
@@ -264,14 +267,12 @@ public class TransformImageView extends AppCompatImageView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (changed || (mBitmapDecoded && !mBitmapLaidOut)) {
-
             left = getPaddingLeft();
             top = getPaddingTop();
             right = getWidth() - getPaddingRight();
             bottom = getHeight() - getPaddingBottom();
             mThisWidth = right - left;
             mThisHeight = bottom - top;
-
             onImageLaidOut();
         }
     }
@@ -285,18 +286,13 @@ public class TransformImageView extends AppCompatImageView {
         if (drawable == null) {
             return;
         }
-
         float w = drawable.getIntrinsicWidth();
         float h = drawable.getIntrinsicHeight();
-
         Log.d(TAG, String.format("Image size: [%d:%d]", (int) w, (int) h));
-
         RectF initialImageRect = new RectF(0, 0, w, h);
         mInitialImageCorners = RectUtils.getCornersFromRect(initialImageRect);
         mInitialImageCenter = RectUtils.getCenterFromRect(initialImageRect);
-
         mBitmapLaidOut = true;
-
         if (mTransformImageListener != null) {
             mTransformImageListener.onLoadComplete();
         }
@@ -336,5 +332,4 @@ public class TransformImageView extends AppCompatImageView {
         mCurrentImageMatrix.mapPoints(mCurrentImageCorners, mInitialImageCorners);
         mCurrentImageMatrix.mapPoints(mCurrentImageCenter, mInitialImageCenter);
     }
-
 }
