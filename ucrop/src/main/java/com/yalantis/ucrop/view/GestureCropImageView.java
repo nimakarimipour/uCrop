@@ -1,11 +1,11 @@
 package com.yalantis.ucrop.view;
 
+import androidx.annotation.Nullable;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-
 import com.yalantis.ucrop.util.RotationGestureDetector;
 
 /**
@@ -16,12 +16,15 @@ public class GestureCropImageView extends CropImageView {
     private static final int DOUBLE_TAP_ZOOM_DURATION = 200;
 
     private ScaleGestureDetector mScaleDetector;
+
     private RotationGestureDetector mRotateDetector;
+
     private GestureDetector mGestureDetector;
 
     private float mMidPntX, mMidPntY;
 
     private boolean mIsRotateEnabled = true, mIsScaleEnabled = true, mIsGestureEnabled = true;
+
     private int mDoubleTapScaleSteps = 5;
 
     public GestureCropImageView(Context context) {
@@ -79,24 +82,19 @@ public class GestureCropImageView extends CropImageView {
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
             cancelAllAnimations();
         }
-
         if (event.getPointerCount() > 1) {
             mMidPntX = (event.getX(0) + event.getX(1)) / 2;
             mMidPntY = (event.getY(0) + event.getY(1)) / 2;
         }
-
         if (mIsGestureEnabled) {
             mGestureDetector.onTouchEvent(event);
         }
-
         if (mIsScaleEnabled) {
             mScaleDetector.onTouchEvent(event);
         }
-
         if (mIsRotateEnabled) {
             mRotateDetector.onTouchEvent(event);
         }
-
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
             setImageToWrapCropBounds();
         }
@@ -146,7 +144,6 @@ public class GestureCropImageView extends CropImageView {
             postTranslate(-distanceX, -distanceY);
             return true;
         }
-
     }
 
     private class RotateListener extends RotationGestureDetector.SimpleOnRotationGestureListener {
@@ -156,7 +153,5 @@ public class GestureCropImageView extends CropImageView {
             postRotate(rotationDetector.getAngle(), mMidPntX, mMidPntY);
             return true;
         }
-
     }
-
 }
