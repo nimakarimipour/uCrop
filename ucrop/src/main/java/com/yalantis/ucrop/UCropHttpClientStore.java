@@ -1,15 +1,17 @@
 package com.yalantis.ucrop;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-
 import okhttp3.OkHttpClient;
 
 public class UCropHttpClientStore {
 
-    private UCropHttpClientStore() {}
+    private UCropHttpClientStore() {
+    }
 
     public final static UCropHttpClientStore INSTANCE = new UCropHttpClientStore();
 
+    @Nullable
     private OkHttpClient client;
 
     @NonNull
