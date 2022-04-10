@@ -15,6 +15,7 @@
  */
 package com.yalantis.ucrop.util;
 
+import androidx.annotation.Nullable;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -26,8 +27,11 @@ public class FastBitmapDrawable extends Drawable {
 
     private final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
+    @Nullable
     private Bitmap mBitmap;
+
     private int mAlpha;
+
     private int mWidth, mHeight;
 
     public FastBitmapDrawable(Bitmap b) {
@@ -86,6 +90,7 @@ public class FastBitmapDrawable extends Drawable {
         return mHeight;
     }
 
+    @Nullable
     public Bitmap getBitmap() {
         return mBitmap;
     }
@@ -99,5 +104,4 @@ public class FastBitmapDrawable extends Drawable {
             mWidth = mHeight = 0;
         }
     }
-
 }
