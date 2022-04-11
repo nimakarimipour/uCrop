@@ -1,5 +1,6 @@
 package com.yalantis.ucrop.model;
 
+import androidx.annotation.Nullable;
 import android.graphics.Bitmap;
 
 /**
@@ -10,14 +11,16 @@ public class CropParameters {
     private int mMaxResultImageSizeX, mMaxResultImageSizeY;
 
     private Bitmap.CompressFormat mCompressFormat;
+
     private int mCompressQuality;
+
+    @Nullable
     private String mImageInputPath, mImageOutputPath;
+
+    @Nullable
     private ExifInfo mExifInfo;
 
-
-    public CropParameters(int maxResultImageSizeX, int maxResultImageSizeY,
-                          Bitmap.CompressFormat compressFormat, int compressQuality,
-                          String imageInputPath, String imageOutputPath, ExifInfo exifInfo) {
+    public CropParameters(int maxResultImageSizeX, int maxResultImageSizeY, Bitmap.CompressFormat compressFormat, int compressQuality, @Nullable String imageInputPath, @Nullable String imageOutputPath, @Nullable ExifInfo exifInfo) {
         mMaxResultImageSizeX = maxResultImageSizeX;
         mMaxResultImageSizeY = maxResultImageSizeY;
         mCompressFormat = compressFormat;
@@ -43,16 +46,18 @@ public class CropParameters {
         return mCompressQuality;
     }
 
+    @Nullable
     public String getImageInputPath() {
         return mImageInputPath;
     }
 
+    @Nullable
     public String getImageOutputPath() {
         return mImageOutputPath;
     }
 
+    @Nullable
     public ExifInfo getExifInfo() {
         return mExifInfo;
     }
-
 }
